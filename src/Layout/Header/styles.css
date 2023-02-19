@@ -1,0 +1,45 @@
+header {
+  width: 50px;
+  height: 100%;
+  background-color: #db3d44;
+  overflow: hidden;
+  padding: 10px;
+  transition: ease 0.3s;
+}
+
+.opened_header {
+  width: 200px;
+}
+
+.menu_logo {
+  display: flex;
+  align-items: center;
+  width: 150px;
+}
+
+.toggle {
+  width: 30px;
+  height: 3px;
+  background-color: #fff;
+  margin-right: 20px;
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle::after {
+  position: absolute;
+  content: "";
+  width: 30px;
+  height: 3px;
+  top: -7px;
+  background-color: #fff;
+}
+
+.toggle::before {
+  position: absolute;
+  content: "";
+  width: 30px;
+  height: 3px;
+  top: 7px;
+  background-color: #fff;
+}
