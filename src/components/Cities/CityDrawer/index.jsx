@@ -31,12 +31,12 @@ export const CityDrawer = ({ drawer, changeDrawer }) => {
   useEffect(() => {
     dispatch(setPortThunk());
   }, []);
+
   const cbError = () => {
     message.error("Can't add this City");
   };
 
   const onFinish = (values) => {
-    // console.log(values);
     dispatch(createCityThunk({ values }));
     form.resetFields();
   };
@@ -49,7 +49,7 @@ export const CityDrawer = ({ drawer, changeDrawer }) => {
       title="Add New City"
       placement="right"
       onClose={changeDrawer}
-      open={drawer}
+      open={true}
     >
       <div className="drawer_content">
         <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
@@ -81,7 +81,7 @@ export const CityDrawer = ({ drawer, changeDrawer }) => {
             <Input placeholder="Name" style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item
-            name={"activePort"}
+            name={"activeport"}
             style={{ marginBottom: "20px" }}
             rules={[{ required: true }]}
           >
@@ -101,7 +101,7 @@ export const CityDrawer = ({ drawer, changeDrawer }) => {
             }
           </Form.Item>
           <Form.Item
-            name={"deliveryPrice"}
+            name={"deliveryprice"}
             style={{ marginBottom: "20px" }}
             rules={[
               {
@@ -114,7 +114,7 @@ export const CityDrawer = ({ drawer, changeDrawer }) => {
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="submit">
-              Add Game
+              Add City
             </Button>
           </Form.Item>
         </Form>

@@ -1,14 +1,17 @@
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import { RouteComponents } from "./routes";
+import { EditContextProvider } from "./context/provider";
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
-        <RouteComponents />
-      </div>
-    </BrowserRouter>
+    <EditContextProvider>
+      <BrowserRouter>
+        <div className="App">
+          <RouteComponents />
+        </div>
+      </BrowserRouter>
+    </EditContextProvider>
   );
 }
 

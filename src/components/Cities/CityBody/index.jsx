@@ -6,17 +6,24 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useSelector } from "react-redux";
 import { CityBodyPrev } from "./CityBodyPrev";
+import { useSelector } from "react-redux";
+import { Spin } from "antd";
 
 export const CityBody = () => {
-  const { cities } = useSelector((state) => state.track);
-  console.log(cities);
+  const { cities, status } = useSelector((state) => state.track);
+
+  if (status !== "resolved" || !cities) {
+    return (
+      <Spin tip="Loading..." style={{ width: "100%", height: "100%" }}></Spin>
+    );
+  }
+
   return (
     <TableContainer
       component={Paper}
       sx={{
-        width: "600px",
+        minWidth: "300px",
         mt: 2,
         mb: 2,
         borderRadius: "0",
@@ -47,6 +54,9 @@ export const CityBody = () => {
             </TableCell>
             <TableCell sx={{ fontWeight: "600", minWidth: 100 }} align="center">
               Price From Port
+            </TableCell>
+            <TableCell sx={{ fontWeight: "600", minWidth: 100 }} align="center">
+              Actions
             </TableCell>
           </TableRow>
         </TableHead>

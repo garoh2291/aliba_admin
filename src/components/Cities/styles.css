@@ -1,7 +1,6 @@
-.city_header {
+.page_header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 50px;
-  border: 1px solid;
 }

@@ -1,0 +1,7 @@
+.new_port {
+  width: 30%;
+  min-height: 300px;
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 1px 1px 10px 2px #e2e0e0;
+}

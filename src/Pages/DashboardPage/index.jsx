@@ -5,7 +5,7 @@ export const DashboardPage = () => {
   return (
     <div className="dashboard_wrapper">
       <Header />
-      <div style={{ flex: "1", padding: "10px 20px" }}>
+      <div style={{ flex: "1", padding: "10px 20px", overflowY: "scroll" }}>
         <Outlet />
       </div>
     </div>

@@ -1,27 +1,57 @@
 import "./styles.css";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setCitiesThunk } from "../../Redux/trackSlice";
-import { message, Button, Drawer } from "antd";
+import { message, Button, Input } from "antd";
 import { removeToken } from "../../helpers/token";
 import { CityDrawer } from "./CityDrawer";
 import { CityBody } from "./CityBody";
+import { EditDrawer } from "./EditDrawer";
+import { EditContext } from "../../context";
+import { generateQuery } from "../../helpers";
+import SearchIcon from "@mui/icons-material/Search";
 
 export const Cities = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [searchSortQuery, setSearchSortQuery] = useState([]);
   const [drawer, setDrawer] = useState(false);
+  const { isEditOpen } = useContext(EditContext);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const getTasksClosure = (filterEntries) => {
+    const newArr = searchSortQuery.filter((item) => {
+      return item.queryRoute === filterEntries.queryRoute;
+    });
+    if (newArr.length === 0) {
+      setSearchSortQuery((prev) => {
+        return [...prev, filterEntries];
+      });
+    } else {
+      setSearchSortQuery((prev) => {
+        return searchSortQuery.map((item) => {
+          if (item.queryRoute === filterEntries.queryRoute) {
+            return filterEntries;
+          }
+          return item;
+        });
+      });
+    }
+  };
+
   const cb = () => {
     removeToken();
     navigate("/login");
   };
 
   useEffect(() => {
-    dispatch(setCitiesThunk({ error, cb }));
-  }, []);
+    const query = generateQuery(searchSortQuery);
+
+    dispatch(setCitiesThunk({ query, error, cb }));
+  }, [searchSortQuery, dispatch]);
+
   const error = (message) => {
     messageApi.open({
       type: "error",
@@ -33,12 +63,29 @@ export const Cities = () => {
   const changeDrawer = () => {
     setDrawer((prev) => !prev);
   };
+
+  const searchQuery = (event) => {
+    const { value } = event.target;
+    getTasksClosure({
+      queryRoute: "search",
+      queryValue: value,
+    });
+  };
+
   return (
     <div>
-      <div className="city_header">
+      {contextHolder}
+      <div className="page_header">
         <h3>Cities</h3>
+        <Input
+          placeholder="Search For City"
+          onChange={searchQuery}
+          style={{ width: "200px" }}
+          prefix={<SearchIcon />}
+        />
         <Button onClick={changeDrawer}>Add New City</Button>
-        <CityDrawer drawer={drawer} changeDrawer={changeDrawer} />
+        {drawer && <CityDrawer drawer={drawer} changeDrawer={changeDrawer} />}
+        {isEditOpen && <EditDrawer />}
       </div>
       <div className="city_body">
         <CityBody />

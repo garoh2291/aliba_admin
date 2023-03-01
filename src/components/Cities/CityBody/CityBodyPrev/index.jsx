@@ -1,7 +1,22 @@
 import React from "react";
 import { TableCell, TableRow } from "@mui/material";
 import "./styles.css";
+import { useDispatch } from "react-redux";
+import { deleteCityThunk } from "../../../../Redux/trackSlice";
+import { useContext } from "react";
+import { EditContext } from "../../../../context";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 export const CityBodyPrev = ({ row }) => {
+  const { changeEdit } = useContext(EditContext);
+  const dispatch = useDispatch();
+
+  const onDelete = () => {
+    console.log(row._id);
+    const { _id } = row;
+    dispatch(deleteCityThunk({ _id }));
+  };
   return (
     <TableRow
       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -14,7 +29,7 @@ export const CityBodyPrev = ({ row }) => {
         {row.city.toUpperCase()}
       </TableCell>
       <TableCell align="center" sx={{ padding: "1px" }}>
-        {row.deliveryPrice}
+        {row.deliveryprice} $
       </TableCell>
       <TableCell
         align="center"
@@ -25,9 +40,19 @@ export const CityBodyPrev = ({ row }) => {
           padding: "1px",
         }}
       >
-        {row.activePort.port.toUpperCase()}
+        {row.activeport.port.toUpperCase()}
       </TableCell>
-      <TableCell align="center">{row.activePort.deliveryPrice}</TableCell>
+      <TableCell align="center">{row.activeport.deliveryPrice} $</TableCell>
+      <TableCell align="center">
+        <DeleteIcon
+          onClick={onDelete}
+          sx={{ color: "red", cursor: "pointer" }}
+        />
+        <SettingsIcon
+          onClick={() => changeEdit(row)}
+          sx={{ color: "#1F44FF", cursor: "pointer" }}
+        />
+      </TableCell>
     </TableRow>
   );
 };

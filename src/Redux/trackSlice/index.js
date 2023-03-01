@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { BACKEND_URL } from "../../data";
+import { getCitiesRequest } from "../../helpers/api";
 
 export const setUserThunk = createAsyncThunk(
   "track/setUserThunk",
@@ -18,9 +19,9 @@ export const setUserThunk = createAsyncThunk(
       } else {
         localStorage.setItem("token", JSON.stringify(data.token));
         cb();
-      }
 
-      return { user: data.user };
+        dispatch(setUser({ data }));
+      }
     } catch (e) {
       error(e);
       rejectWithValue(e);
@@ -30,18 +31,12 @@ export const setUserThunk = createAsyncThunk(
 
 export const setCitiesThunk = createAsyncThunk(
   "track/setCitiesThunk",
-  async function ({ error, cb }, { dispatch, rejectWithValue }) {
+  async function ({ query, error, cb }, { dispatch, rejectWithValue }) {
     try {
-      const res = await fetch(`${BACKEND_URL}/cities`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
-        },
-      });
-      const data = await res.json();
-      if (data.error) {
+      const data = await getCitiesRequest(query);
+      if (!data || data.error) {
         cb();
+        console.log("hello");
         throw new Error(data.error.message);
       }
 
@@ -52,8 +47,30 @@ export const setCitiesThunk = createAsyncThunk(
   }
 );
 
+export const setFobThunk = createAsyncThunk(
+  "track/setFobThunk",
+  async function ({ cb }, { dispatch, rejectWithValue }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/fob`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+        },
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+);
+
 export const createCityThunk = createAsyncThunk(
-  "track,createCityThunk",
+  "track/createCityThunk",
   async function ({ values }, { dispatch, rejectWithValue }) {
     const res = await fetch(`${BACKEND_URL}/cities`, {
       method: "POST",
@@ -67,6 +84,101 @@ export const createCityThunk = createAsyncThunk(
     const data = await res.json();
     console.log(data);
     dispatch(createCity({ data }));
+  }
+);
+
+export const createPortThunk = createAsyncThunk(
+  "track/createPortThunk",
+  async function ({ values, cbError }, { dispatch, rejectWithValue }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/ports`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await res.json();
+      if (data.code) throw new Error("Duplicated City");
+      dispatch(createPort({ data }));
+    } catch (e) {
+      console.log(e);
+      cbError();
+    }
+  }
+);
+
+export const changePortThunk = createAsyncThunk(
+  "track/changePortThunk",
+
+  async function ({ values, _id, onclose }, { dispatch, rejectWithValue }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/ports/${_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      if (data.code === 11000) {
+        alert("Duplicated");
+      }
+
+      dispatch(editPort({ data }));
+      onclose();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+);
+
+export const changeCityThunk = createAsyncThunk(
+  "track/changeCityThunk",
+
+  async function ({ values, _id, changeEdit }, { dispatch, rejectWithValue }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/cities/${_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      dispatch(editCity({ data }));
+      changeEdit();
+    } catch (e) {
+      console.log(e);
+      alert("Duplicated");
+    }
+  }
+);
+
+export const deleteCityThunk = createAsyncThunk(
+  "track/deleteCityThunk",
+  async function ({ _id }, { dispatch, rejectWithValue }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/cities/${_id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+        },
+      });
+
+      if (!res.ok) {
+        console.log(_id);
+      } else {
+        dispatch(deleteCity({ _id }));
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 );
 
@@ -104,6 +216,7 @@ const trackSlice = createSlice({
     user: null,
     cities: [],
     ports: [],
+    fob: [],
     error: null,
     status: null,
   },
@@ -123,9 +236,53 @@ const trackSlice = createSlice({
         ports,
       };
     },
+    createPort(state, action) {
+      const port = action.payload.data;
+      const ports = [...state.ports, port];
+      return {
+        ...state,
+        ports,
+      };
+    },
+    editPort(state, action) {
+      const editedPort = action.payload.data;
+      const ports = state.ports.map((port) => {
+        if (port._id === editedPort._id) {
+          return editedPort;
+        }
+        return port;
+      });
+
+      return {
+        ...state,
+        ports,
+      };
+    },
     createCity(state, action) {
       const city = action.payload.data;
       const cities = [...state.cities, city];
+      return {
+        ...state,
+        cities,
+      };
+    },
+    editCity(state, action) {
+      const changedCity = action.payload.data;
+      const cities = state.cities.map((city) => {
+        if (city._id === changedCity._id) {
+          return changedCity;
+        }
+        return city;
+      });
+
+      return {
+        ...state,
+        cities,
+      };
+    },
+    deleteCity(state, action) {
+      const deletedId = action.payload._id;
+      const cities = state.cities.filter((city) => city._id !== deletedId);
       return {
         ...state,
         cities,
@@ -136,12 +293,6 @@ const trackSlice = createSlice({
     [setUserThunk.pending]: (state) => {
       state.status = "loading";
       state.error = null;
-    },
-    [setUserThunk.fulfilled]: (state, action) => {
-      const { user } = action.payload;
-      state.status = "resolved";
-
-      state.user = user;
     },
     [setUserThunk.rejected]: setError,
     [setCitiesThunk.pending]: (state) => {
@@ -154,9 +305,25 @@ const trackSlice = createSlice({
       state.cities = data;
     },
     [setCitiesThunk.rejected]: setError,
+    [setPortThunk.fulfilled]: (state, action) => {
+      state.status = "resolved";
+    },
+    [setPortThunk.pending]: (state) => {
+      state.status = "loading";
+      state.error = null;
+    },
+    [setPortThunk.rejected]: setError,
   },
 });
 
-const { setUser, setPorts, createCity } = trackSlice.actions;
+const {
+  editPort,
+  setUser,
+  setPorts,
+  createCity,
+  deleteCity,
+  editCity,
+  createPort,
+} = trackSlice.actions;
 
 export default trackSlice.reducer;
