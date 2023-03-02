@@ -5,6 +5,7 @@ import "./styles.css";
 
 export const CalcPreview = () => {
   const { info, setSummary } = useContext(CalcContext);
+  console.log(info);
   return (
     <div className="preview">
       <div className="close">
