@@ -5,13 +5,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeCityThunk, setPortThunk } from "../../../Redux/trackSlice";
 import states from "../../../static/states.json";
 import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import { useNavigate } from "react-router-dom";
+import { removeToken } from "../../../helpers/token";
 
 export const EditDrawer = () => {
   const { changeEdit, info } = useContext(EditContext);
   const dispatch = useDispatch();
   const { ports } = useSelector((state) => state.track);
+  const navigate = useNavigate();
+  const cb = () => {
+    removeToken();
+    navigate("/login");
+  };
   useEffect(() => {
-    dispatch(setPortThunk());
+    dispatch(setPortThunk({ cb }));
   }, []);
   const [inputdata, setInputdata] = useState({
     state: {

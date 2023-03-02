@@ -5,6 +5,8 @@ import { Select, Form, message, Input } from "antd";
 import "./styles.css";
 import { BACKEND_URL } from "../../data";
 import { CalcPreview } from "./CalcPreview";
+import { useNavigate } from "react-router-dom";
+import { removeToken } from "../../helpers/token";
 
 const { Option } = Select;
 
@@ -28,7 +30,11 @@ export const Calc = () => {
   const [form] = Form.useForm();
   const [cities, setCities] = useState([]);
   const { info, setInfo, summary, setSummary } = useContext(CalcContext);
-
+  const navigate = useNavigate();
+  const cb = () => {
+    removeToken();
+    navigate("/login");
+  };
   const onFinish = (values) => {
     setSummary(true);
   };
@@ -50,6 +56,10 @@ export const Calc = () => {
       fetch(`${BACKEND_URL}/fob/single/${value}`)
         .then((res) => res.json())
         .then((data) => {
+          if (!data || data.error) {
+            cb();
+            throw new Error(data.error.message);
+          }
           const { price } = data;
           const insurance =
             (+price + +value) * 0.015 > 70 ? (+price + +value) * 0.015 : 70;
@@ -74,7 +84,16 @@ export const Calc = () => {
   useEffect(() => {
     fetch(`${BACKEND_URL}/cities/all`)
       .then((res) => res.json())
-      .then((data) => setCities(data));
+      .then((data) => {
+        if (!data || data.error) {
+          cb();
+          throw new Error(data.error.message);
+        }
+        setCities(data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return (

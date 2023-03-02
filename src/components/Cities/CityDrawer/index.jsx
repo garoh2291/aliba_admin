@@ -5,6 +5,8 @@ import "./styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { createCityThunk, setPortThunk } from "../../../Redux/trackSlice";
+import { useNavigate } from "react-router-dom";
+import { removeToken } from "../../../helpers/token";
 
 const { Option } = Select;
 
@@ -28,8 +30,13 @@ export const CityDrawer = ({ drawer, changeDrawer }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { ports } = useSelector((state) => state.track);
+  const navigate = useNavigate();
+  const cb = () => {
+    removeToken();
+    navigate("/login");
+  };
   useEffect(() => {
-    dispatch(setPortThunk());
+    dispatch(setPortThunk({ cb }));
   }, []);
 
   const cbError = () => {

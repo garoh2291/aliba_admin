@@ -17,10 +17,13 @@ export const Cities = () => {
   const [searchSortQuery, setSearchSortQuery] = useState([]);
   const [drawer, setDrawer] = useState(false);
   const { isEditOpen } = useContext(EditContext);
-
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+  const cb = () => {
+    removeToken();
+    navigate("/login");
+  };
   const getTasksClosure = (filterEntries) => {
     const newArr = searchSortQuery.filter((item) => {
       return item.queryRoute === filterEntries.queryRoute;
@@ -39,11 +42,6 @@ export const Cities = () => {
         });
       });
     }
-  };
-
-  const cb = () => {
-    removeToken();
-    navigate("/login");
   };
 
   useEffect(() => {

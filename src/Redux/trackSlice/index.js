@@ -59,6 +59,8 @@ export const setFobThunk = createAsyncThunk(
       });
       const data = await res.json();
       if (data.error) {
+        console.log(data);
+        cb();
         throw new Error(data.error.message);
       }
 
@@ -210,7 +212,7 @@ export const deleteCityThunk = createAsyncThunk(
 
 export const setPortThunk = createAsyncThunk(
   "track/setPortThunk",
-  async function (_, { dispatch, rejectWithValue }) {
+  async function ({ cb }, { dispatch, rejectWithValue }) {
     try {
       const res = await fetch(`${BACKEND_URL}/ports`, {
         method: "GET",
@@ -221,6 +223,7 @@ export const setPortThunk = createAsyncThunk(
       });
       const data = await res.json();
       if (data.error) {
+        cb();
         throw new Error(data.error.message);
       }
 
