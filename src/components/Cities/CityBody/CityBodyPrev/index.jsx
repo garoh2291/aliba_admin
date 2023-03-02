@@ -13,7 +13,6 @@ export const CityBodyPrev = ({ row }) => {
   const dispatch = useDispatch();
 
   const onDelete = () => {
-    console.log(row._id);
     const { _id } = row;
     dispatch(deleteCityThunk({ _id }));
   };

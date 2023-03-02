@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EditContext } from "../index";
+import { EditContext, CalcContext } from "../index";
 
 export const EditContextProvider = ({ children }) => {
   const [info, setInfo] = useState(null);
@@ -18,5 +18,29 @@ export const EditContextProvider = ({ children }) => {
     <EditContext.Provider value={{ info, changeEdit, isEditOpen }}>
       {children}
     </EditContext.Provider>
+  );
+};
+
+export const CalcContextProvider = ({ children }) => {
+  const [info, setInfo] = useState({
+    carPrice: {
+      value: "",
+    },
+    deliveryPrice: {
+      value: "",
+    },
+    fobPrice: {
+      value: "",
+    },
+    insPrice: {
+      value: "",
+    },
+  });
+  const [summary, setSummary] = useState(false);
+
+  return (
+    <CalcContext.Provider value={{ info, setInfo, summary, setSummary }}>
+      {children}
+    </CalcContext.Provider>
   );
 };

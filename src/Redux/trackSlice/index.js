@@ -36,7 +36,6 @@ export const setCitiesThunk = createAsyncThunk(
       const data = await getCitiesRequest(query);
       if (!data || data.error) {
         cb();
-        console.log("hello");
         throw new Error(data.error.message);
       }
 
@@ -59,10 +58,37 @@ export const setFobThunk = createAsyncThunk(
         },
       });
       const data = await res.json();
-      console.log(data);
       if (data.error) {
         throw new Error(data.error.message);
       }
+
+      dispatch(setFob({ data }));
+    } catch (e) {
+      console.log(e);
+    }
+  }
+);
+
+export const changeFobThunk = createAsyncThunk(
+  "track/changePortThunk",
+
+  async function ({ values, _id, cb }, { dispatch, rejectWithValue }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/fob/${_id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      if (data.code === 11000) {
+        alert("Duplicated");
+      }
+
+      dispatch(editFob({ data }));
+      cb();
     } catch (e) {
       console.log(e);
     }
@@ -236,6 +262,14 @@ const trackSlice = createSlice({
         ports,
       };
     },
+    setFob(state, action) {
+      const fob = action.payload.data;
+
+      return {
+        ...state,
+        fob,
+      };
+    },
     createPort(state, action) {
       const port = action.payload.data;
       const ports = [...state.ports, port];
@@ -256,6 +290,20 @@ const trackSlice = createSlice({
       return {
         ...state,
         ports,
+      };
+    },
+    editFob(state, action) {
+      const editedFob = action.payload.data;
+      const fob = state.fob.map((fob) => {
+        if (fob._id === editedFob._id) {
+          return editedFob;
+        }
+        return fob;
+      });
+
+      return {
+        ...state,
+        fob,
       };
     },
     createCity(state, action) {
@@ -313,6 +361,14 @@ const trackSlice = createSlice({
       state.error = null;
     },
     [setPortThunk.rejected]: setError,
+    [setFobThunk.fulfilled]: (state, action) => {
+      state.status = "resolved";
+    },
+    [setFobThunk.pending]: (state) => {
+      state.status = "loading";
+      state.error = null;
+    },
+    [setFobThunk.rejected]: setError,
   },
 });
 
@@ -324,6 +380,8 @@ const {
   deleteCity,
   editCity,
   createPort,
+  editFob,
+  setFob,
 } = trackSlice.actions;
 
 export default trackSlice.reducer;

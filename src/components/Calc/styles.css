@@ -1,0 +1,19 @@
+.calc_wrapper {
+  width: 400px;
+  min-height: 300px;
+  box-shadow: 1px 1px 4px 2px #c7c7c7;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.calc_wrapper > form {
+  width: 100%;
+}
+
+.calc_section {
+  margin-top: 30px;
+  display: flex;
+  gap: 30px;
+}

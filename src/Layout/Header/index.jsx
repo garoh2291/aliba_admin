@@ -4,7 +4,7 @@ import "./styles.css";
 import { NAVBAR_PAGES } from "../../data";
 import { NavItem } from "./NavItem";
 
-const { cities, ports, fob } = NAVBAR_PAGES;
+const { cities, ports, fob, calc } = NAVBAR_PAGES;
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,6 +28,7 @@ export const Header = () => {
         <NavItem label={cities.label} link={cities.link} />
         <NavItem label={ports.label} link={ports.link} />
         <NavItem label={fob.label} link={fob.link} />
+        <NavItem label={calc.label} link={calc.link} />
       </div>
     </header>
   );

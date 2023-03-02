@@ -5,6 +5,7 @@ import { RequireAuth } from "../hoc";
 import { DashboardPage } from "../Pages/DashboardPage";
 import { LoginPage } from "../Pages/LoginPage";
 import { FobPage } from "../Pages/FobPage";
+import { CalcPage } from "../Pages/CalcPage";
 
 export const RouteComponents = () => {
   return (
@@ -20,6 +21,7 @@ export const RouteComponents = () => {
         <Route path="" element={<CityPage />} />
         <Route path="port" element={<PortPage />} />
         <Route path="fob" element={<FobPage />} />
+        <Route path="calculate" element={<CalcPage />} />
       </Route>
       <Route path="login" element={<LoginPage />} />
     </Routes>

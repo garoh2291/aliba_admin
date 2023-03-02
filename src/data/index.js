@@ -13,4 +13,8 @@ export const NAVBAR_PAGES = {
     link: "fob",
     label: "Fob",
   },
+  calc: {
+    link: "calculate",
+    label: "Calculator",
+  },
 };
